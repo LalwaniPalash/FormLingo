@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-dark text-white">
+                    <h4 class="text-center mb-0">Responses for "{{ form.name }}"</h4>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted text-center mb-4">{{ form.description }}</p>
+                    <hr>
+
+                    <!-- Download Buttons -->
+                    <div class="d-flex justify-content-end mb-4">
+                        <a href="{{ url_for('main.download_responses', form_id=form.id, format='csv') }}" class="btn btn-outline-primary me-2">
+                            Download as CSV
+                        </a>
+                        <a href="{{ url_for('main.download_responses', form_id=form.id, format='xlsx') }}" class="btn btn-outline-success">
+                            Download as Excel
+                        </a>
+                    </div>
+
+                    {% if responses %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        {% for question in form.questions %}
+                                            <th>{{ question.question_text }}</th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for response in responses %}
+                                        <tr>
+                                            <td>{{ loop.index }}</td>
+                                            {% for question in form.questions %}
+                                                <td>
+                                                    {% if question.question_type == 'file' and response.get(question.id|string, '').startswith('/') %}
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="fa fa-file-alt text-primary me-2"></i> <!-- Add a file icon -->
+                                                            <a href="{{ url_for('main.download_file', file_path=response.get(question.id|string)) }}" 
+                                                            target="_blank" 
+                                                            class="text-decoration-none text-primary">
+                                                            Download {{ response.get(question.id|string).split('/')[-1] }}
+                                                            </a>
+                                                        </div>
+                                                    {% else %}
+                                                        {{ response.get(question.id|string, 'N/A') }}
+                                                    {% endif %}
+                                                </td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-center text-muted">No responses have been recorded for this form yet.</p>
+                    {% endif %}
+
+                    <div class="text-end mt-4">
+                        <a href="{{ url_for('main.dashboard') }}" class="btn btn-dark">Back to Dashboard</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

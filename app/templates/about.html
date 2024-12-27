@@ -1,0 +1,41 @@
+<!-- about.html -->
+{% extends "base.html" %}
+
+{% block title %}About{% endblock %}
+
+{% block content %}
+<section class="about-section">
+    <div class="about-header">
+        <h1>About FormLingo</h1>
+        <p class="lead">Breaking down language barriers in form creation and data collection</p>
+    </div>
+
+    <div class="about-content">
+        <div class="about-card">
+            <h2>Our Mission</h2>
+            <p>FormLingo empowers organizations to create forms that transcend language barriers. We believe in making data collection accessible to everyone, regardless of their native language.</p>
+        </div>
+
+        <div class="about-card">
+            <h2>How It Works</h2>
+            <p>Using Google Translate API, FormLingo automatically translates your forms into multiple languages. Responses are recorded in both the original form language and the respondent's preferred language, ensuring clear communication and accurate data collection.</p>
+        </div>
+
+        <div class="about-card">
+            <h2>Key Features</h2>
+            <ul class="feature-list">
+                <li>Real-time form translation</li>
+                <li>Support for multiple languages</li>
+                <li>Dual-language response recording</li>
+                <li>Easy form creation and management</li>
+                <li>Secure data handling</li>
+            </ul>
+        </div>
+
+        <div class="about-card">
+            <h2>Our Team</h2>
+            <p>FormLingo is built by a passionate team of developers and linguists who understand the importance of breaking down language barriers in today's global community.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

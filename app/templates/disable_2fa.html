@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title text-center mb-4">Disable 2FA</h3>
+                    <p class="text-center text-muted mb-4">
+                        Are you sure you want to disable Two-Factor Authentication (2FA)?
+                    </p>
+                    <form method="POST" action="{{ url_for('main.disable_2fa') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-danger">Disable 2FA</button>
+                        </div>
+                    </form>
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

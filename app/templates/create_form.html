@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-dark text-white">
+                    <h4 class="text-center mb-0">
+                        {% if edit_mode %} Edit Form {% else %} Create New Form {% endif %}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> 
+
+                        <!-- Form Name -->
+                        <div class="mb-4">
+                            <label for="name" class="form-label">Form Name</label>
+                            <input type="text" class="form-control" name="name" id="name"
+                                   value="{{ form.name if edit_mode else '' }}" required>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" name="description" id="description" rows="3"
+                                      placeholder="Enter a brief description (optional)">{{ form.description if edit_mode else '' }}</textarea>
+                        </div>
+
+                        <!-- Questions Section -->
+                        <div id="questions-container">
+                            {% if edit_mode %}
+                                {% for question in questions %}
+                                    <div class="question-block mb-4">
+                                        <label class="form-label">Question {{ loop.index }}</label>
+                                        <input type="text" class="form-control mb-2" name="questions[]" value="{{ question.text }}" placeholder="Enter question" required>
+                                        <label for="question_type" class="form-label">Question Type</label>
+                                        <select class="form-select mb-2" name="question_types[]" onchange="toggleOptions(this)">
+                                            <option value="text" {% if question.type == 'text' %}selected{% endif %}>Text</option>
+                                            <option value="mcq" {% if question.type == 'mcq' %}selected{% endif %}>Multiple Choice</option>
+                                            <option value="dropdown" {% if question.type == 'dropdown' %}selected{% endif %}>Dropdown</option>
+                                            <option value="file" {% if question.type == 'file' %}selected{% endif %}>File Upload</option>
+                                            <option value="date" {% if question.type == 'date' %}selected{% endif %}>Date Picker</option>
+                                            <option value="slider" {% if question.type == 'slider' %}selected{% endif %}>Slider</option>
+                                        </select>
+                                        <input type="text" class="form-control options-field" name="options[]" value="{{ question.options }}" placeholder="Enter options (comma-separated)" {% if question.type not in ['mcq', 'dropdown'] %}style="display:none;"{% endif %}>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="question-block mb-4">
+                                    <label class="form-label">Question 1</label>
+                                    <input type="text" class="form-control mb-2" name="questions[]" placeholder="Enter question" required>
+                                    <label for="question_type" class="form-label">Question Type</label>
+                                    <select class="form-select mb-2" name="question_types[]" onchange="toggleOptions(this)">
+                                        <option value="text">Text</option>
+                                        <option value="mcq">Multiple Choice</option>
+                                        <option value="dropdown">Dropdown</option>
+                                        <option value="file">File Upload</option>
+                                        <option value="date">Date Picker</option>
+                                        <option value="slider">Slider</option>
+                                    </select>
+                                    <input type="text" class="form-control options-field" name="options[]" placeholder="Enter options (comma-separated)" style="display:none;">
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="text-end">
+                            <button type="button" id="add-question" class="btn btn-outline-dark">+ Add Question</button>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-dark btn-lg">
+                                {% if edit_mode %} Update Form {% else %} Create Form {% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('add-question').addEventListener('click', () => {
+    const container = document.getElementById('questions-container');
+    const count = container.children.length + 1;
+    const question = document.createElement('div');
+    question.classList.add('question-block', 'mb-4');
+    question.innerHTML = `
+        <label class="form-label">Question ${count}</label>
+        <input type="text" class="form-control mb-2" name="questions[]" placeholder="Enter question" required>
+        <label for="question_type" class="form-label">Question Type</label>
+        <select class="form-select mb-2" name="question_types[]" onchange="toggleOptions(this)">
+            <option value="text">Text</option>
+            <option value="mcq">Multiple Choice</option>
+            <option value="dropdown">Dropdown</option>
+            <option value="file">File Upload</option>
+            <option value="date">Date Picker</option>
+            <option value="slider">Slider</option>
+        </select>
+        <input type="text" class="form-control options-field" name="options[]" placeholder="Enter options (comma-separated)" style="display:none;">
+    `;
+    container.appendChild(question);
+});
+
+function toggleOptions(selectElement) {
+    const optionsInput = selectElement.nextElementSibling;
+    if (selectElement.value === 'mcq' || selectElement.value === 'dropdown') {
+        optionsInput.style.display = 'block';
+    } else {
+        optionsInput.style.display = 'none';
+    }
+}
+</script>
+{% endblock %}

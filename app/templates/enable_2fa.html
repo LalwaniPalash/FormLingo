@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Enable Two-Factor Authentication</h1>
+{% if otp_uri %}
+    <p>Scan this QR code with your 2FA app:</p>
+    <img src="https://api.qrserver.com/v1/create-qr-code/?data={{ otp_uri }}&size=200x200" alt="QR Code">
+    <p>Alternatively, use this secret: <strong>{{ current_user.two_factor_secret }}</strong></p>
+{% else %}
+    <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn btn-primary">Enable 2FA</button>
+    </form>
+{% endif %}
+{% endblock %}

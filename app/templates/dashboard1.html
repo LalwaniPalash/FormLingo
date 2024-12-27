@@ -1,0 +1,96 @@
+<!-- dashboard.html -->
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h2 class="mb-0">Dashboard</h2>
+        </div>
+        <div class="col-md-6 text-end">
+            <a href="{{ url_for('main.create_form') }}" class="btn btn-dark">+ New Form</a>
+        </div>
+    </div>
+
+    {% if forms %}
+        <table class="table table-bordered table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Form Name</th>
+                    <th>Description</th>
+                    <th>Created On</th>
+                    <th>Actions</th>
+                    <th>Shareable Link</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for form in forms %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ form.name }}</td>
+                    <td>{{ form.description }}</td>
+                    <td>{{ form.created_on.strftime('%Y-%m-%d') }}</td>
+                    <td>
+                        <a href="{{ url_for('main.edit_form', form_id=form.id) }}" class="btn btn-sm btn-outline-dark">Edit</a>
+                        <form method="POST" action="{{ url_for('main.delete_form', form_id=form.id) }}" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                    </td>
+                    <td>
+                        <input type="hidden" readonly class="form-control" value="{{ request.url_root }}form/{{ form.public_token }}">
+                        <button onclick="copyToClipboard('{{ request.url_root }}form/{{ form.public_token }}')" class="btn btn-sm btn-primary mt-1">Copy Link</button>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('main.view_responses', form_id=form.id) }}" class="btn btn-sm btn-outline-primary">View Responses</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-secondary text-center">
+            No forms created yet. Click the <strong>"New Form"</strong> button to create one.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const notification = document.createElement('div');
+                notification.classList.add('toast', 'position-fixed', 'bottom-0', 'end-0', 'p-3', 'm-3');
+                notification.setAttribute('role', 'alert');
+                notification.style.zIndex = 1050;
+                notification.innerHTML = `
+                    <div class="toast-header bg-primary text-white">
+                        <strong class="me-auto">Success</strong>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        <p class="mb-0">Link copied to clipboard:</p>
+                        <a href="${text}" target="_blank" class="text-decoration-none text-primary">${text}</a>
+                    </div>
+                `;
+                document.body.appendChild(notification);
+
+                const toast = new bootstrap.Toast(notification, {
+                    animation: true,
+                    delay: 3000
+                });
+                toast.show();
+
+                toast._element.addEventListener('hidden.bs.toast', () => {
+                    notification.remove();
+                });
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+    </script>
+{% endblock %}

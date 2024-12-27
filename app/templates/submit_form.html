@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-dark text-white">
+                    <h4 class="text-center mb-0">{{ form_title }}</h4>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted text-center mb-4">{{ form_description }}</p>
+                    <hr>
+                    <!-- Language Selection -->
+                    <form method="GET" action="{{ url_for('main.submit_form', public_token=form.public_token) }}" class="mb-4">
+                        <div class="row g-2">
+                            <div class="col-md-8">
+                                <select class="form-select" name="lang" onchange="this.form.submit()">
+                                    {% for lang_name, lang_code in languages.items() %}
+                                        <option value="{{ lang_code }}" {% if selected_language == lang_code %}selected{% endif %}>
+                                            {{ lang_name | title }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-dark w-100">Translate</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- Form Questions -->
+                    <form method="POST" enctype="multipart/form-data" class="px-3">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                        {% for question in questions %}
+                            <div class="mb-4">
+                                <label class="form-label fw-bold" for="question-{{ question.id }}">{{ question.question_text }}</label>
+
+                                <!-- Text Input -->
+                                {% if question.question_type == 'text' %}
+                                    <input type="text" class="form-control" id="question-{{ question.id }}" name="{{ question.id }}" placeholder="Type your answer here..." required>
+
+                                <!-- Multiple Choice -->
+                                {% elif question.question_type == 'mcq' %}
+                                    <div>
+                                        {% for option in question.options.split(',') %}
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="{{ question.id }}" value="{{ option.strip() }}" id="option-{{ question.id }}-{{ loop.index }}" required>
+                                                <label class="form-check-label" for="option-{{ question.id }}-{{ loop.index }}">
+                                                    {{ option.strip() }}
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+
+                                <!-- Dropdown -->
+                                {% elif question.question_type == 'dropdown' %}
+                                    <select class="form-select" id="question-{{ question.id }}" name="{{ question.id }}" required>
+                                        <option value="" disabled selected>Select an option</option>
+                                        {% for option in question.options.split(',') %}
+                                            <option value="{{ option.strip() }}">{{ option.strip() }}</option>
+                                        {% endfor %}
+                                    </select>
+
+                                <!-- File Upload -->
+                                {% elif question.question_type == 'file' %}
+                                    <input type="file" class="form-control" id="question-{{ question.id }}" name="{{ question.id }}" required>
+
+                                <!-- Date Picker -->
+                                {% elif question.question_type == 'date' %}
+                                    <input type="date" class="form-control" id="question-{{ question.id }}" name="{{ question.id }}" required>
+
+                                <!-- Slider -->
+                                {% elif question.question_type == 'slider' %}
+                                    <input type="range" class="form-range" id="question-{{ question.id }}" name="{{ question.id }}" min="1" max="10" step="1" required>
+                                    <div class="d-flex justify-content-between">
+                                        <span>1</span>
+                                        <span>10</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        <!-- Submit Button -->
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-dark btn-lg">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Add consistent padding for the description */
+.card-body p {
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+}
+
+/* Make radio buttons larger and well-aligned */
+.form-check-input {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 10px;
+}
+
+.form-check-label {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    display: inline-block;
+}
+
+/* Add hover effects for inputs */
+.form-check-input:hover,
+.form-select:hover,
+.form-control:hover {
+    border-color: #343a40; /* Dark border on hover */
+}
+
+/* Consistent padding for all inputs */
+input, select {
+    padding: 10px;
+}
+
+/* Improve the spacing between questions */
+.mb-4 {
+    margin-bottom: 25px;
+}
+
+/* Ensure submit button has consistent width */
+button[type="submit"] {
+    width: 100%;
+}
+</style>
+{% endblock %}
