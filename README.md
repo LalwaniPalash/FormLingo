@@ -25,7 +25,7 @@ FormLingo is a versatile form management application built with Flask, enabling 
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/FormLingo.git
+git clone https://github.com/LalwaniPalash/FormLingo.git
 cd FormLingo
 ```
 
